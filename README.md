@@ -174,11 +174,24 @@ The pipeline also prints a full classification report for each model. It saves a
 
 | Model | Accuracy | Precision | Recall | F1 | ROC AUC |
 |---|---|---|---|---|---|
-| Logistic Regression | — | — | — | — | — |
-| Random Forest | — | — | — | — | — |
-| Gradient Boosting | — | — | — | — | — |
+| Logistic Regression | 0.676 | 0.205 | **0.651** | **0.311** | 0.730 |
+| Random Forest | 0.846 | 0.300 | 0.277 | 0.288 | 0.666 |
+| Gradient Boosting | **0.897** | **0.647** | 0.194 | 0.299 | **0.738** |
 
-*To be filled in from the GitHub Actions run log (the `results/summary.csv` artifact). The pipeline prints this table at the end of every run.*
+*Positive class = subscribed ("yes"), about 11% of clients. Test set = 20% stratified hold-out. From GitHub Actions run #1 (`results/summary.csv` artifact); the pipeline prints this table at the end of every run.*
+
+**Reading the results:**
+- **Accuracy is misleading here.** A model that always says "no" would score about 0.89, so Gradient Boosting's 0.897 barely beats it.
+- **Gradient Boosting** has no class weighting. It is precise (65% of the clients it flags do subscribe) but finds only 19% of subscribers.
+- **Logistic Regression** with `class_weight="balanced"` finds 65% of subscribers, at the cost of many false positives (precision 0.20).
+- **All three are close on F1 (0.29–0.31).** Which to deploy depends on the cost of a wasted call compared with a missed subscriber:
+  - Cheap calls favour Logistic Regression for its higher recall.
+  - Limited call capacity favours Gradient Boosting for its higher precision.
+- **ROC AUC around 0.73** means the available features carry only modest signal.
+- **Next steps:**
+  - tune the decision threshold on predicted probabilities instead of using 0.5;
+  - weight or resample for Gradient Boosting;
+  - compare with a precision-recall AUC.
 
 **How to read the results.** The two class-weighted models (LR and RF) should trade some precision for higher recall. Unweighted Gradient Boosting at the default 0.5 threshold will tend to be conservative, with high precision and lower recall. If so, its ROC AUC is the fairer basis for comparison, and its threshold should be tuned before it is used.
 
