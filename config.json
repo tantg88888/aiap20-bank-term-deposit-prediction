@@ -1,0 +1,50 @@
+{
+    "data_loader": {
+        "db_path_relative": "data/bmarket.db",
+        "db_url": "https://techassessment.blob.core.windows.net/aiap20-assessment-data/bmarket.db",
+        "table_name": "bank_marketing"
+    },
+    "preprocessor": {
+        "numerical_features": [
+            "Age",
+            "Campaign Calls"
+        ],
+        "categorical_features": [
+            "Occupation",
+            "Marital Status",
+            "Education Level",
+            "Credit Default",
+            "Housing Loan",
+            "Personal Loan",
+            "Contact Method",
+            "PreviouslyContacted"
+        ],
+        "target_column": "Subscription Status",
+        "test_size": 0.2,
+        "random_state": 42
+    },
+    "model_trainer": {
+        "models_config": {
+            "LogisticRegression": {
+                "C": 1.0,
+                "solver": "liblinear",
+                "random_state": 42,
+                "class_weight": "balanced"
+            },
+            "RandomForestClassifier": {
+                "n_estimators": 100,
+                "random_state": 42,
+                "class_weight": "balanced"
+            },
+            "GradientBoostingClassifier": {
+                "n_estimators": 100,
+                "learning_rate": 0.1,
+                "random_state": 42
+            }
+        },
+        "model_save_dir_relative": "models"
+    },
+    "evaluator": {
+        "results_save_dir_relative": "results"
+    }
+}
